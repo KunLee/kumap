@@ -24,11 +24,10 @@
 }
 
 .logo {
-  width: 28px;
-  height: 28px;
+  height: 36px;
+  width: auto;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
+  display: block;
 }
 
 h1,

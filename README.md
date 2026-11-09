@@ -114,11 +114,16 @@ Useful checks:
 
 ## 4. Mapping configuration
 
-No ArcGIS key or account is required.
+**Neither service used by this POC requires an API key.** That is not the same as “free for Jason Windows production.”
+
+| Service | API key? | Cost / licence for this POC |
+| --- | --- | --- |
+| **OpenFreeMap** public tiles (`tiles.openfreemap.org`) | No | Free public instance, including commercial use. Attribution required (OpenStreetMap / OpenFreeMap). See [openfreemap.org](https://openfreemap.org/). |
+| **Landgate SLIP public REST** (LGATE-002 / LGATE-284) | No | Public and reachable without a key, but licensed as **Personal Use / Other (Non-Commercial)**. Not a commercial production licence. |
 
 | Setting | Value |
 | --- | --- |
-| Renderer | MapLibre GL JS |
+| Renderer | MapLibre GL JS (library, not a hosted API) |
 | Basemap | OpenFreeMap Positron |
 | Style URL | `https://tiles.openfreemap.org/styles/positron` |
 | Default view | Perth, `[115.86, -31.95]`, zoom 10 |
