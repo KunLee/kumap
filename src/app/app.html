@@ -1,0 +1,154 @@
+<header class="app-header">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="28" height="28">
+        <path fill="#000" d="M12 2.2 22.2 12.8 12 23.2 1.8 12.8z" />
+        <path fill="#ee3424" d="M12 1 23 12 12 23 1 12z" />
+      </svg>
+    </span>
+    <h1>{{ title }}</h1>
+  </div>
+  <p class="header-note">POC · public Landgate · no Pronto</p>
+</header>
+
+<section class="search-panel" aria-label="Job and property search">
+  <form class="search-form" (submit)="$event.preventDefault(); findProperty()">
+    <div class="field-grid">
+      <label>Job <input name="jobNumber" [(ngModel)]="form.jobNumber" placeholder="Optional" autocomplete="off" /></label>
+      <label>Lot <input name="lotNumber" [(ngModel)]="form.lotNumber" placeholder="e.g. 275" autocomplete="off" /></label>
+      <label>Plan <input name="planNumber" [(ngModel)]="form.planNumber" placeholder="e.g. DP 412345" autocomplete="off" /></label>
+      <label>Street <input name="street" [(ngModel)]="form.street" placeholder="e.g. Irene" autocomplete="off" /></label>
+      <label>Suburb <input name="suburb" [(ngModel)]="form.suburb" placeholder="e.g. North Fremantle" autocomplete="off" /></label>
+      <label class="muted">Estate <input name="estate" [(ngModel)]="form.estate" placeholder="Not in public data" autocomplete="off" /></label>
+      <label class="muted">Postcode <input name="postcode" [(ngModel)]="form.postcode" placeholder="Not in public data" autocomplete="off" /></label>
+    </div>
+    <div class="search-actions">
+      <button type="submit" [disabled]="busy()">{{ busy() ? 'Searching…' : 'Find' }}</button>
+      <button type="button" class="secondary" (click)="fillExampleA()">Example A</button>
+      <button type="button" class="secondary" (click)="fillExampleB()">Example B</button>
+    </div>
+  </form>
+  @if (status(); as currentStatus) {
+    <p class="status" [attr.data-kind]="currentStatus.kind">{{ currentStatus.text }}</p>
+  }
+</section>
+
+<main class="workspace">
+  <section class="map-pane">
+    <div #mapHost class="map-host" aria-label="Western Australia cadastral map"></div>
+    @if (scaleHint()) {
+      <p class="scale-hint">Zoom in to load Landgate parcels</p>
+    }
+    @if (viewportWarning()) {
+      <p class="viewport-note">{{ viewportWarning() }}</p>
+    }
+  </section>
+
+  <aside class="side-pane">
+    <section class="result">
+      <header class="result-head">
+        <h2>Selected parcel</h2>
+        <p class="layer-status" [attr.data-kind]="layerStatus().kind">{{ layerStatus().text }}</p>
+      </header>
+
+      @if (plans().length) {
+        <h3>Choose a plan extent</h3>
+        <div class="stack">
+          @for (plan of plans(); track $index) {
+            <button type="button" class="candidate" (click)="choosePlan(plan)">
+              <strong>{{ planLabel(plan) }}</strong>
+              <span>{{ planMeta(plan) }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (candidates().length) {
+        <h3>Choose a parcel</h3>
+        <div class="stack">
+          @for (feature of candidates(); track $index) {
+            <button type="button" class="candidate" (click)="chooseCandidate(feature)">
+              <strong>{{ lotLabel(feature) }}</strong>
+              <span>{{ streetLabel(feature) }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (result(); as current) {
+        <div class="coords">
+          <span class="coords-label">WGS84</span>
+          <strong class="mono">{{ current.copyText }}</strong>
+        </div>
+        <dl class="kv">
+          <div><dt>Lot</dt><dd>{{ current.lot }}</dd></div>
+          <div><dt>Street</dt><dd>{{ current.street }}</dd></div>
+          <div><dt>Suburb</dt><dd>{{ current.suburb }}</dd></div>
+          <div><dt>Plan</dt><dd>{{ current.plan }}</dd></div>
+          <div><dt>Parcel ID</dt><dd>{{ current.parcelId }}</dd></div>
+          @if (current.job !== '—') {
+            <div><dt>Job</dt><dd>{{ current.job }}</dd></div>
+          }
+        </dl>
+        @if (current.warnings.length) {
+          <div class="warnings">
+            @for (warning of current.warnings; track warning) {
+              <p>{{ warning }}</p>
+            }
+          </div>
+        }
+        <div class="result-actions">
+          <button type="button" (click)="copyCoordinates()">Copy coordinates</button>
+          <button type="button" class="demo" (click)="useForPronto()">Use for Pronto</button>
+        </div>
+        <details class="raw">
+          <summary>Provenance and raw Landgate attributes</summary>
+          <dl class="kv compact">
+            <div><dt>Coordinate type</dt><dd>{{ current.coordinateType }}</dd></div>
+            <div><dt>CRS</dt><dd>{{ current.crs }}</dd></div>
+            <div><dt>Method</dt><dd class="mono">{{ current.coordinateMethod }}</dd></div>
+            <div><dt>Source</dt><dd>{{ current.source }}</dd></div>
+            <div><dt>Location source</dt><dd class="mono">{{ current.locationSource }}</dd></div>
+            <div><dt>Dataset</dt><dd>{{ current.dataset }}</dd></div>
+            <div><dt>Area</dt><dd>{{ current.area }}</dd></div>
+            <div><dt>Retrieved</dt><dd class="mono">{{ current.timestamp }}</dd></div>
+          </dl>
+          <table>
+            <tbody>
+              @for (entry of rawEntries(current); track entry[0]) {
+                <tr>
+                  <th scope="row">{{ entry[0] }}</th>
+                  <td>{{ entry[1] }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </details>
+      } @else if (!candidates().length && !plans().length) {
+        <p class="empty">Search or click a parcel on the map.</p>
+        <p class="hint">
+          Public LGATE-002 has no plan, estate or postcode fields. Lot numbers are often blank in new estates — click
+          the parcel if search cannot uniquely identify it.
+        </p>
+      }
+    </section>
+  </aside>
+</main>
+
+<footer class="app-footer">
+  <p>
+    Landgate SLIP cadastre (not the basemap) · OpenFreeMap Positron · MapLibre · OpenStreetMap · personal / non-commercial
+    public data — not a production licence
+  </p>
+</footer>
+
+@if (toast()) {
+  <div class="toast" role="status">{{ toast() }}</div>
+}
+
+<dialog id="pronto-dialog">
+  <p class="pronto-message">{{ prontoMessage() }}</p>
+  <form method="dialog">
+    <button type="submit">Close</button>
+  </form>
+</dialog>

@@ -1,0 +1,94 @@
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+/* Colours from jasonwindows.com.au (header, CTA, logo SVG). */
+:root {
+  --brand-red: #ef3e33;
+  --logo-red: #ee3424;
+  --ink: #333333;
+  --black: #000000;
+  --paper: #ffffff;
+  --panel: #ffffff;
+  --line: #e6e6e6;
+  --muted: #6b6b6b;
+  --ok: #215c45;
+  --warn: #8a5a10;
+  --err: #c62828;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --navy: var(--ink);
+  --steel: var(--brand-red);
+  --accent: var(--brand-red);
+  font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+body {
+  overflow: hidden;
+}
+
+a {
+  color: var(--brand-red);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border: 0;
+  background: var(--brand-red);
+  color: #fff;
+  padding: 0.55rem 0.9rem;
+}
+
+button.secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+
+button.demo {
+  background: var(--black);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+input {
+  font: inherit;
+  padding: 0.48rem 0.55rem;
+  border: 1px solid #cccccc;
+  background: #fff;
+  color: var(--ink);
+}
+
+input:focus {
+  outline: 2px solid var(--brand-red);
+  border-color: var(--brand-red);
+}
+
+.maplibregl-popup-content {
+  font: 0.82rem/1.35 Helvetica, Arial, sans-serif;
+  color: var(--ink);
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: 0.68rem;
+}
+
+.maplibregl-ctrl-home {
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23333' d='M10 3.2 2.5 9.4h2.1V17h4.3v-4.6h2.2V17h4.3V9.4h2.1z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px 16px;
+}

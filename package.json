@@ -1,0 +1,42 @@
+{
+  "name": "jason-windows-new-construction-location-poc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "POC: locate Jason Windows new-construction jobs using live Landgate cadastre on MapLibre / OpenFreeMap.",
+  "packageManager": "npm@11.19.1",
+  "scripts": {
+    "ng": "ng",
+    "start": "npm run dev",
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm run start:api\" \"npm run start:web\"",
+    "start:web": "ng serve --proxy-config proxy.conf.json",
+    "start:api": "tsx server/dev.ts",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development"
+  },
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@turf/area": "^7.2.0",
+    "@turf/boolean-point-in-polygon": "^7.2.0",
+    "@turf/centroid": "^7.2.0",
+    "@turf/point-on-feature": "^7.2.0",
+    "@vercel/node": "^5.3.26",
+    "maplibre-gl": "^5.10.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.29",
+    "@angular/cli": "^21.2.29",
+    "@angular/compiler-cli": "^21.2.0",
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^24.9.1",
+    "concurrently": "^9.2.1",
+    "prettier": "^3.8.1",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.2"
+  }
+}
