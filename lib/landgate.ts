@@ -7,7 +7,6 @@
 
 import type { Feature, FeatureCollection, Geometry } from 'geojson';
 import { config } from './config';
-import { describeParcelLocation } from './coordinates';
 import type {
   HealthResponse,
   IdentifyResponse,
@@ -625,6 +624,7 @@ export async function selectFeature(feature: Feature): Promise<SelectResponse> {
       'That parcel was returned without geometry, so a coordinate cannot be calculated.'
     );
   }
+  const { describeParcelLocation } = await import('./coordinates');
   const location = describeParcelLocation(feature);
   const intersectingPlans = await findIntersectingPlans(feature.geometry);
   const warnings: string[] = [];

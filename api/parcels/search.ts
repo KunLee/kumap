@@ -1,19 +1,20 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { readJsonBody, sendError, sendJson } from '../../lib/http';
+import { json, jsonError, sendWebOrNode, toWebRequest } from '../../lib/http-web';
 import { search } from '../../lib/landgate';
 import type { SearchCriteria } from '../../lib/types';
 
-export const config = { maxDuration: 30 };
-
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
-  if (req.method !== 'POST') {
-    sendJson(res, 405, { error: 'Use POST.' });
-    return;
-  }
+async function handle(request: Request): Promise<Response> {
   try {
-    const body = await readJsonBody<SearchCriteria>(req);
-    sendJson(res, 200, await search(body));
+    const body = (await request.json()) as SearchCriteria;
+    return json(200, await search(body));
   } catch (error) {
-    sendError(res, error);
+    return jsonError(error);
   }
+}
+
+export async function POST(request: Request): Promise<Response> {
+  return handle(toWebRequest(request));
+}
+
+export default async function handler(req: unknown, res?: unknown): Promise<Response | void> {
+  return sendWebOrNode(await handle(toWebRequest(req as Request)), res as never);
 }

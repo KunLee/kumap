@@ -1,23 +1,24 @@
 import type { Feature } from 'geojson';
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { readJsonBody, sendError, sendJson } from '../../lib/http';
+import { json, jsonError, sendWebOrNode, toWebRequest } from '../../lib/http-web';
 import { selectFeature } from '../../lib/landgate';
 import { LandgateError } from '../../lib/types';
 
-export const config = { maxDuration: 30 };
-
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
-  if (req.method !== 'POST') {
-    sendJson(res, 405, { error: 'Use POST.' });
-    return;
-  }
+async function handle(request: Request): Promise<Response> {
   try {
-    const body = await readJsonBody<{ feature?: Feature }>(req);
+    const body = (await request.json()) as { feature?: Feature };
     if (!body.feature) {
       throw new LandgateError('INVALID', 'A GeoJSON feature is required.');
     }
-    sendJson(res, 200, await selectFeature(body.feature));
+    return json(200, await selectFeature(body.feature));
   } catch (error) {
-    sendError(res, error);
+    return jsonError(error);
   }
+}
+
+export async function POST(request: Request): Promise<Response> {
+  return handle(toWebRequest(request));
+}
+
+export default async function handler(req: unknown, res?: unknown): Promise<Response | void> {
+  return sendWebOrNode(await handle(toWebRequest(req as Request)), res as never);
 }

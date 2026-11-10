@@ -5,7 +5,8 @@
   "outputDirectory": "dist/kumap/browser",
   "functions": {
     "api/**/*.ts": {
-      "maxDuration": 30
+      "runtime": "nodejs20.x",
+      "maxDuration": 10
     }
   }
 }

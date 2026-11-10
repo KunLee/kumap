@@ -1,21 +1,26 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { queryString, sendError, sendJson } from '../../lib/http';
+import { json, jsonError, queryParam, sendWebOrNode, toWebRequest } from '../../lib/http-web';
 import { queryViewport } from '../../lib/landgate';
 
-export const config = { maxDuration: 30 };
-
-export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
-  if (req.method !== 'GET') {
-    sendJson(res, 405, { error: 'Use GET.' });
-    return;
-  }
+async function handle(request: Request): Promise<Response> {
   try {
-    const west = Number(queryString(req, 'west'));
-    const south = Number(queryString(req, 'south'));
-    const east = Number(queryString(req, 'east'));
-    const north = Number(queryString(req, 'north'));
-    sendJson(res, 200, await queryViewport(west, south, east, north));
+    return json(
+      200,
+      await queryViewport(
+        Number(queryParam(request, 'west')),
+        Number(queryParam(request, 'south')),
+        Number(queryParam(request, 'east')),
+        Number(queryParam(request, 'north'))
+      )
+    );
   } catch (error) {
-    sendError(res, error);
+    return jsonError(error);
   }
+}
+
+export async function GET(request: Request): Promise<Response> {
+  return handle(toWebRequest(request));
+}
+
+export default async function handler(req: unknown, res?: unknown): Promise<Response | void> {
+  return sendWebOrNode(await handle(toWebRequest(req as Request)), res as never);
 }
