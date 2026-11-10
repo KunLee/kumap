@@ -2,11 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "angular",
   "buildCommand": "ng build",
-  "outputDirectory": "dist/kumap/browser",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 10
-    }
-  }
+  "outputDirectory": "dist/kumap/browser"
 }
