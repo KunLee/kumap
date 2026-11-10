@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "20.x"
+    "node": "26.x"
   },
   "description": "POC: locate Jason Windows new-construction jobs using live Landgate cadastre on MapLibre / OpenFreeMap.",
   "packageManager": "npm@11.19.1",
