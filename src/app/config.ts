@@ -18,6 +18,5 @@ export const appConfig = {
       [116.25, -31.45]
     ] as [[number, number], [number, number]]
   },
-  attribution:
-    '© OpenStreetMap contributors · © OpenFreeMap · Landgate SLIP public cadastre (not the basemap)'
+  attribution: '© OpenStreetMap · OpenFreeMap · Landgate SLIP'
 };

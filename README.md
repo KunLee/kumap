@@ -262,9 +262,7 @@ The displayed point is **derived**. It is not a Landgate-supplied construction p
 ## Deploy to Vercel
 
 ```bash
-npm i -g vercel
-npm run build
-vercel
+npx vercel
 ```
 
 `vercel.json` uses the Angular output at `dist/kumap/browser` and TypeScript functions in `/api`. Hobby plans cap function duration; keep map zoom high so Landgate queries stay small.

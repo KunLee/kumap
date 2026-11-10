@@ -78,7 +78,7 @@ export class App implements OnDestroy {
 
   async findProperty(): Promise<void> {
     this.busy.set(true);
-    this.setStatus('info', 'Querying live Landgate SLIP services…');
+    this.status.set(null);
     this.candidates.set([]);
     this.plans.set([]);
     this.map.clearSelection();
@@ -130,38 +130,34 @@ export class App implements OnDestroy {
   async copyCoordinates(): Promise<void> {
     const text = this.result()?.copyText;
     if (!text) {
-      this.showToast('Select a parcel before copying.');
+      this.showToast('Select a parcel first.');
       return;
     }
     try {
       await navigator.clipboard.writeText(text);
       this.showToast(`Copied ${text}`);
     } catch {
-      this.showToast('Clipboard permission was denied. Copy the coordinates from the result panel.');
+      this.showToast('Could not copy.');
     }
   }
 
   useForPronto(): void {
     const current = this.result();
     if (!current) {
-      this.prontoMessage.set(
-        'Select a parcel first. In production these coordinates would be written to the Pronto job — this POC does not connect to Pronto.'
-      );
+      this.prontoMessage.set('Select a parcel first.');
     } else {
-      this.prontoMessage.set(
-        `POC only — these coordinates would be written to the Pronto job.\n\n${current.copyText}\nSource: ${current.locationSource}\nNothing was sent to Pronto.`
-      );
+      this.prontoMessage.set(`${current.copyText}\nNothing was sent to Pronto.`);
     }
     (document.getElementById('pronto-dialog') as HTMLDialogElement | null)?.showModal();
   }
 
   streetLabel(feature: Feature): string {
-    return formatStreet(feature.properties) || 'Street not on public layer';
+    return formatStreet(feature.properties) || '—';
   }
 
   lotLabel(feature: Feature): string {
     const lot = feature.properties?.['lot_number'];
-    return lot ? `Lot ${String(lot)}` : 'Parcel (lot not on public layer)';
+    return lot ? `Lot ${String(lot)}` : 'Parcel';
   }
 
   planLabel(feature: Feature): string {
@@ -228,7 +224,7 @@ export class App implements OnDestroy {
   }
 
   private async identify(lng: number, lat: number): Promise<void> {
-    this.setStatus('info', 'Identifying Landgate parcel…');
+    this.status.set(null);
     try {
       const response = await this.api.identify(lng, lat);
       if (response.status === 'multiple') {
@@ -276,11 +272,7 @@ export class App implements OnDestroy {
     this.plans.set([]);
     if (response.status === 'single') {
       this.candidates.set([]);
-      this.setStatus(
-        'ok',
-        response.warnings.join(' ') ||
-          'One public-layer parcel matched. Review the attributes before treating it as the job site.'
-      );
+      this.status.set(null);
       await this.selectParcel(response.features[0]);
       return;
     }
@@ -307,10 +299,9 @@ export class App implements OnDestroy {
         selected.location.lng,
         selected.location.lat,
         lotValue ? `Lot ${lotValue}` : 'Landgate parcel',
-        [result.street, result.suburb].filter((value) => !value.startsWith('Not ')).join(', ') ||
-          'Selected from live Landgate geometry'
+        [result.street, result.suburb].filter((value) => value !== '—').join(', ')
       );
-      this.setStatus('ok', 'Parcel selected from live Landgate geometry. Coordinates are derived — see provenance.');
+      this.status.set(null);
     } catch (error) {
       this.handleError(error);
     }
@@ -355,7 +346,7 @@ function str(value: unknown): string {
   return value == null ? '' : String(value).trim();
 }
 
-function display(value: unknown, empty = 'Not provided by this public layer'): string {
+function display(value: unknown, empty = '—'): string {
   const text = str(value);
   return text || empty;
 }
@@ -366,11 +357,11 @@ function toPropertyResult(jobNumber: string, selected: SelectResponse): Property
   const planLabels = plans.map((plan) =>
     [plan.label_text || plan.plan_identifier, plan.status].filter(Boolean).join(' ')
   );
-  let plan = 'Not a field on Cadastre Address (LGATE-002)';
+  let plan = '—';
   if (planLabels.length === 1) {
-    plan = `${planLabels[0]} (plan extent intersection — not a parcel attribute)`;
+    plan = planLabels[0];
   } else if (planLabels.length > 1) {
-    plan = 'Multiple intersecting plan extents — see warnings';
+    plan = planLabels.join('; ');
   }
 
   return {
@@ -380,8 +371,8 @@ function toPropertyResult(jobNumber: string, selected: SelectResponse): Property
     parcelId:
       props['land_id'] != null ? String(props['land_id']) : `objectid ${String(props['objectid'] ?? '—')}`,
     suburb: display(props['locality']),
-    street: formatStreet(props) || 'Not provided by this public layer',
-    area: selected.location.areaLabel || 'Not provided by this public layer',
+    street: formatStreet(props) || '—',
+    area: selected.location.areaLabel || '—',
     latitude: selected.location.latitude,
     longitude: selected.location.longitude,
     coordinateType: selected.location.methodLabel,

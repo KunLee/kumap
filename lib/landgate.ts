@@ -166,9 +166,9 @@ async function queryFeatures(
   recordCount: number
 ): Promise<FeatureCollection> {
   const payload = await postQuery(layerUrl, {
-    where: params.where || '1=1',
+    where: params['where'] || '1=1',
     outFields: outFields.join(','),
-    returnGeometry: params.returnGeometry ?? 'true',
+    returnGeometry: params['returnGeometry'] ?? 'true',
     outSR: '4326',
     inSR: '4326',
     f: 'geojson',
@@ -180,7 +180,7 @@ async function queryFeatures(
 
 async function queryCount(layerUrl: string, params: Record<string, string>): Promise<number> {
   const payload = (await postQuery(layerUrl, {
-    where: params.where || '1=1',
+    where: params['where'] || '1=1',
     returnCountOnly: 'true',
     f: 'json',
     inSR: '4326',
@@ -195,7 +195,7 @@ async function queryExtent(
 ): Promise<[number, number, number, number] | null> {
   try {
     const payload = (await postQuery(layerUrl, {
-      where: params.where || '1=1',
+      where: params['where'] || '1=1',
       returnExtentOnly: 'true',
       outSR: '4326',
       inSR: '4326',

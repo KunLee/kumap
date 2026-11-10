@@ -42,13 +42,6 @@ h1 {
   letter-spacing: -0.02em;
 }
 
-.header-note {
-  margin: 0;
-  font-size: 0.75rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
 .search-panel {
   padding: 0.65rem 1rem;
   background: var(--panel);
@@ -77,11 +70,6 @@ label {
   color: var(--ink);
 }
 
-label.muted {
-  color: var(--muted);
-  font-weight: 500;
-}
-
 .search-actions {
   display: flex;
   flex-shrink: 0;
@@ -95,10 +83,7 @@ label.muted {
 }
 
 .status,
-.warnings,
-.layer-status,
-.hint,
-.empty {
+.warnings {
   font-size: 0.8rem;
   line-height: 1.4;
 }
@@ -142,26 +127,16 @@ label.muted {
   inset: 0;
 }
 
-.scale-hint,
 .viewport-note {
   position: absolute;
   z-index: 2;
   left: 50%;
+  bottom: 1.6rem;
   transform: translateX(-50%);
   background: rgba(18, 50, 77, 0.88);
   color: #fff;
   padding: 0.3rem 0.65rem;
   font-size: 0.78rem;
-  white-space: nowrap;
-}
-
-.scale-hint {
-  top: 0.6rem;
-}
-
-.viewport-note {
-  bottom: 1.6rem;
-  white-space: normal;
   max-width: min(32rem, calc(100% - 3rem));
 }
 
@@ -172,46 +147,15 @@ label.muted {
   padding: 0.85rem 0.9rem 1rem;
 }
 
-.result-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0.5rem;
-  margin-bottom: 0.7rem;
-}
-
 .result h2 {
   font-size: 0.9rem;
   color: var(--ink);
+  margin-bottom: 0.7rem;
 }
 
 .result h3 {
   font-size: 0.78rem;
   margin: 0 0 0.4rem;
-  color: var(--muted);
-}
-
-.layer-status {
-  margin: 0;
-  font-size: 0.72rem;
-  color: var(--muted);
-}
-
-.layer-status[data-kind="ok"] {
-  color: var(--ok);
-}
-
-.layer-status[data-kind="error"] {
-  color: var(--err);
-}
-
-.empty {
-  margin: 0;
-  color: var(--muted);
-}
-
-.hint {
-  margin: 0.65rem 0 0;
   color: var(--muted);
 }
 
@@ -351,18 +295,6 @@ dd {
   font-family: Consolas, "Courier New", monospace;
 }
 
-.app-footer {
-  padding: 0.4rem 1rem;
-  font-size: 0.7rem;
-  color: var(--muted);
-  background: #f7f7f7;
-  border-top: 1px solid var(--line);
-}
-
-.app-footer p {
-  margin: 0;
-}
-
 .toast {
   position: fixed;
   right: 1rem;
@@ -412,9 +344,6 @@ dialog::backdrop {
     max-height: 40vh;
   }
 
-  .header-note {
-    display: none;
-  }
 }
 
 @media (max-width: 640px) {

@@ -3,19 +3,18 @@
     <img class="logo" src="jason-windows-logo.svg" width="117" height="60" alt="Jason Windows" />
     <h1>New Construction Location POC</h1>
   </div>
-  <p class="header-note">No API keys · OpenFreeMap is free · Landgate public is not a commercial licence</p>
 </header>
 
 <section class="search-panel" aria-label="Job and property search">
   <form class="search-form" (submit)="$event.preventDefault(); findProperty()">
     <div class="field-grid">
-      <label>Job <input name="jobNumber" [(ngModel)]="form.jobNumber" placeholder="Optional" autocomplete="off" /></label>
-      <label>Lot <input name="lotNumber" [(ngModel)]="form.lotNumber" placeholder="e.g. 275" autocomplete="off" /></label>
-      <label>Plan <input name="planNumber" [(ngModel)]="form.planNumber" placeholder="e.g. DP 412345" autocomplete="off" /></label>
-      <label>Street <input name="street" [(ngModel)]="form.street" placeholder="e.g. Irene" autocomplete="off" /></label>
-      <label>Suburb <input name="suburb" [(ngModel)]="form.suburb" placeholder="e.g. North Fremantle" autocomplete="off" /></label>
-      <label class="muted">Estate <input name="estate" [(ngModel)]="form.estate" placeholder="Not in public data" autocomplete="off" /></label>
-      <label class="muted">Postcode <input name="postcode" [(ngModel)]="form.postcode" placeholder="Not in public data" autocomplete="off" /></label>
+      <label>Job <input name="jobNumber" [(ngModel)]="form.jobNumber" autocomplete="off" /></label>
+      <label>Lot <input name="lotNumber" [(ngModel)]="form.lotNumber" autocomplete="off" /></label>
+      <label>Plan <input name="planNumber" [(ngModel)]="form.planNumber" autocomplete="off" /></label>
+      <label>Street <input name="street" [(ngModel)]="form.street" autocomplete="off" /></label>
+      <label>Suburb <input name="suburb" [(ngModel)]="form.suburb" autocomplete="off" /></label>
+      <label>Estate <input name="estate" [(ngModel)]="form.estate" autocomplete="off" /></label>
+      <label>Postcode <input name="postcode" [(ngModel)]="form.postcode" autocomplete="off" /></label>
     </div>
     <div class="search-actions">
       <button type="submit" [disabled]="busy()">{{ busy() ? 'Searching…' : 'Find' }}</button>
@@ -31,9 +30,6 @@
 <main class="workspace">
   <section class="map-pane">
     <div #mapHost class="map-host" aria-label="Western Australia cadastral map"></div>
-    @if (scaleHint()) {
-      <p class="scale-hint">Zoom in to load Landgate parcels</p>
-    }
     @if (viewportWarning()) {
       <p class="viewport-note">{{ viewportWarning() }}</p>
     }
@@ -41,13 +37,10 @@
 
   <aside class="side-pane">
     <section class="result">
-      <header class="result-head">
-        <h2>Selected parcel</h2>
-        <p class="layer-status" [attr.data-kind]="layerStatus().kind">{{ layerStatus().text }}</p>
-      </header>
+      <h2>Selected parcel</h2>
 
       @if (plans().length) {
-        <h3>Choose a plan extent</h3>
+        <h3>Choose a plan</h3>
         <div class="stack">
           @for (plan of plans(); track $index) {
             <button type="button" class="candidate" (click)="choosePlan(plan)">
@@ -97,7 +90,7 @@
           <button type="button" class="demo" (click)="useForPronto()">Use for Pronto</button>
         </div>
         <details class="raw">
-          <summary>Provenance and raw Landgate attributes</summary>
+          <summary>Details</summary>
           <dl class="kv compact">
             <div><dt>Coordinate type</dt><dd>{{ current.coordinateType }}</dd></div>
             <div><dt>CRS</dt><dd>{{ current.crs }}</dd></div>
@@ -119,23 +112,10 @@
             </tbody>
           </table>
         </details>
-      } @else if (!candidates().length && !plans().length) {
-        <p class="empty">Search or click a parcel on the map.</p>
-        <p class="hint">
-          Public LGATE-002 has no plan, estate or postcode fields. Lot numbers are often blank in new estates — click
-          the parcel if search cannot uniquely identify it.
-        </p>
       }
     </section>
   </aside>
 </main>
-
-<footer class="app-footer">
-  <p>
-    OpenFreeMap Positron — free public tiles, no API key (attribution required). Landgate SLIP public REST — no API key,
-    personal / non-commercial use only, not a production licence. MapLibre renders the map. Pronto is not connected.
-  </p>
-</footer>
 
 @if (toast()) {
   <div class="toast" role="status">{{ toast() }}</div>
