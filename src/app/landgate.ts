@@ -55,10 +55,24 @@ export class LandgateApi {
       return await firstValueFrom(factory());
     } catch (error) {
       if (error instanceof HttpErrorResponse) {
-        const body = error.error as { error?: string } | null;
-        throw new Error(body?.error || error.message || 'The Landgate API request failed.');
+        throw new Error(httpErrorMessage(error));
       }
       throw error;
     }
   }
+}
+
+function httpErrorMessage(error: HttpErrorResponse): string {
+  const body = error.error;
+  if (typeof body === 'string' && body.trim()) {
+    return body.replace(/\s+/g, ' ').trim();
+  }
+  if (body && typeof body === 'object') {
+    const message = (body as { error?: unknown; message?: unknown }).error
+      ?? (body as { message?: unknown }).message;
+    if (typeof message === 'string' && message.trim()) {
+      return message;
+    }
+  }
+  return error.message || `Landgate API failed (${error.status}).`;
 }

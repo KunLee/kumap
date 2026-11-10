@@ -2,5 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "angular",
   "buildCommand": "ng build",
-  "outputDirectory": "dist/kumap/browser"
+  "outputDirectory": "dist/kumap/browser",
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "lib/**"
+    }
+  }
 }

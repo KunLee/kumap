@@ -1,18 +1,12 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { config } from '../lib/config';
-import { json, jsonError, sendWebOrNode } from '../lib/http-web';
+import { sendError, sendJson } from '../lib/http';
 import { LandgateError } from '../lib/types';
 
-async function handle(): Promise<Response> {
+export default async function handler(_req: VercelRequest, res: VercelResponse): Promise<void> {
   try {
     const { parcel } = config.landgate;
-    let response: Response;
-    try {
-      response = await fetch(`${parcel.url}?f=json`, {
-        signal: AbortSignal.timeout(config.landgateTimeoutMs)
-      });
-    } catch {
-      throw new LandgateError('UNAVAILABLE', 'Could not contact Landgate SLIP.');
-    }
+    const response = await fetch(`${parcel.url}?f=json`);
     const payload = (await response.json()) as {
       name?: string;
       fields?: Array<{ name: string }>;
@@ -26,7 +20,7 @@ async function handle(): Promise<Response> {
           `Landgate returned HTTP ${response.status} when reading ${parcel.datasetId}.`
       );
     }
-    return json(200, {
+    sendJson(res, 200, {
       ok: true,
       name: payload.name || parcel.name,
       datasetId: parcel.datasetId,
@@ -36,12 +30,6 @@ async function handle(): Promise<Response> {
       license: parcel.license
     });
   } catch (error) {
-    return jsonError(error);
+    sendError(res, error);
   }
-}
-
-export const GET = handle;
-
-export default async function handler(req: unknown, res?: unknown): Promise<Response | void> {
-  return sendWebOrNode(await handle(), res as never);
 }
